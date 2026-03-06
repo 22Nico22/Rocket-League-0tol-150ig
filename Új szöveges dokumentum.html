@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Milka és Nico</title>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns: repeat(10, 50px);
+    gap:5px;
+    justify-content:center;
+    margin-bottom:40px;
+}
+
+button{
+    height:40px;
+    border:none;
+    background:#ddd;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button.active{
+    background:green;
+    color:white;
+}
+
+h2{
+    margin-top:30px;
+}
+
+.reset{
+    padding:10px 20px;
+    font-size:16px;
+    margin-bottom:30px;
+}
+</style>
+</head>
+<body>
+
+<h1>Pontok</h1>
+
+<button class="reset" onclick="resetAll()">Összes törlése</button>
+
+<h2>Milka</h2>
+<div id="milka" class="grid"></div>
+
+<h2>Nico</h2>
+<div id="nico" class="grid"></div>
+
+<script>
+function createButtons(containerId){
+    const container = document.getElementById(containerId);
+
+    for(let i=0;i<=100;i++){
+        const btn = document.createElement("button");
+        btn.innerText = i;
+
+        let saved = localStorage.getItem(containerId+"-"+i);
+        if(saved==="1"){
+            btn.classList.add("active");
+        }
+
+        btn.onclick = function(){
+            btn.classList.toggle("active");
+
+            if(btn.classList.contains("active")){
+                localStorage.setItem(containerId+"-"+i,"1");
+            }else{
+                localStorage.removeItem(containerId+"-"+i);
+            }
+        };
+
+        container.appendChild(btn);
+    }
+}
+
+function resetAll(){
+    localStorage.clear();
+    location.reload();
+}
+
+createButtons("milka");
+createButtons("nico");
+</script>
+
+</body>
+</html>

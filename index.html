@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rocket League Goal Tracker</title>
+
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        flex-direction: column;
+        background-image: url(hatter.png);
+        background-color: rgba(78, 74, 74, 0.5);
+      }
+
+      .container {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+      }
+
+      .grid-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: rgb(17, 216, 123);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(10, 30px);
+        gap: 4px;
+        padding: 10px;
+        background-color: rgba(78, 74, 74, 0.5);
+        border-radius: 10px;
+      }
+
+      .box {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        background-color: rgba(145, 140, 140, 0.2);
+        color: rgba(1, 243, 231, 0.8);
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+
+      .box.clicked {
+        background-color: rgba(49, 229, 241, 0.26);
+        color: rgb(212, 200, 29);
+      }
+
+      .reset-btn,
+      .select-btn {
+        margin-top: 5px;
+        padding: 5px 10px;
+        font-size: 20px;
+        cursor: pointer;
+        background-color: cyan;
+        border: none;
+        border-radius: 5px;
+      }
+
+      .input-number {
+        width: 50px;
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      .counter {
+        color: red;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="grid-container">
+        <div class="title">Áron</div>
+        <input
+          type="number"
+          class="input-number"
+          id="input-aron"
+          min="0"
+          max="100"
+        />
+        <button
+          class="select-btn"
+          data-grid="grid-aron"
+          data-input="input-aron"
+        >
+          Kijelölés
+        </button>
+        <div class="grid" id="grid-aron"></div>
+        <div class="counter" id="counter-aron">0/100</div>
+        <button class="reset-btn" data-grid="grid-aron">Visszaállítás</button>
+      </div>
+
+      <div class="grid-container">
+        <div class="title">Milka</div>
+        <input
+          type="number"
+          class="input-number"
+          id="input-milka"
+          min="0"
+          max="100"
+        />
+        <button
+          class="select-btn"
+          data-grid="grid-milka"
+          data-input="input-milka"
+        >
+          Kijelölés
+        </button>
+        <div class="grid" id="grid-milka"></div>
+        <div class="counter" id="counter-milka">0/100</div>
+        <button class="reset-btn" data-grid="grid-milka">Visszaállítás</button>
+      </div>
+
+      <div class="grid-container">
+        <div class="title">Nico</div>
+        <input
+          type="number"
+          class="input-number"
+          id="input-nico"
+          min="0"
+          max="100"
+        />
+        <button
+          class="select-btn"
+          data-grid="grid-nico"
+          data-input="input-nico"
+        >
+          Kijelölés
+        </button>
+        <div class="grid" id="grid-nico"></div>
+        <div class="counter" id="counter-nico">0/100</div>
+        <button class="reset-btn" data-grid="grid-nico">Visszaállítás</button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        function initializeGrid(gridId) {
+          const grid = document.getElementById(gridId);
+          let savedClicks = JSON.parse(localStorage.getItem(gridId)) || [];
+          const counter = document.getElementById(
+            `counter-${gridId.split("-")[1]}`,
+          );
+
+          function updateCounter() {
+            counter.textContent = `${savedClicks.length}/100`;
+          }
+
+          function renderGrid() {
+            grid.innerHTML = "";
+
+            for (let i = 0; i <= 100; i++) {
+              const box = document.createElement("div");
+              box.classList.add("box");
+              box.textContent = i;
+
+              if (savedClicks.includes(i)) {
+                box.classList.add("clicked");
+              }
+
+              box.addEventListener("click", () => {
+                if (box.classList.contains("clicked")) {
+                  savedClicks = savedClicks.filter((num) => num !== i);
+                  box.classList.remove("clicked");
+                } else {
+                  savedClicks.push(i);
+                  box.classList.add("clicked");
+                }
+
+                localStorage.setItem(gridId, JSON.stringify(savedClicks));
+                updateCounter();
+              });
+
+              grid.appendChild(box);
+            }
+
+            updateCounter();
+          }
+
+          renderGrid();
+        }
+
+        initializeGrid("grid-aron");
+        initializeGrid("grid-milka");
+        initializeGrid("grid-nico");
+
+        document.querySelectorAll(".reset-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            const gridId = button.getAttribute("data-grid");
+            localStorage.removeItem(gridId);
+            initializeGrid(gridId);
+          });
+        });
+
+        document.querySelectorAll(".select-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            const gridId = button.getAttribute("data-grid");
+            const inputId = button.getAttribute("data-input");
+            const input = document.getElementById(inputId);
+            const number = parseInt(input.value);
+
+            if (number >= 0 && number <= 100) {
+              document
+                .querySelector(`#${gridId} .box:nth-child(${number + 1})`)
+                .click();
+              input.value = "";
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html> 
