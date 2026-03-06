@@ -230,6 +230,63 @@
           });
         });
       });
+      
     </script>
+    <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBtOC-xelveA8BTPRd31LlhxR2vJH5cvtY",
+  authDomain: "rl-0-100.firebaseapp.com",
+  databaseURL: "https://rl-0-100-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rl-0-100",
+  storageBucket: "rl-0-100.firebasestorage.app",
+  messagingSenderId: "1011825835720",
+  appId: "1:1011825835720:web:324df808f5c82ef53eaffd",
+  measurementId: "G-BCBKK0LSYZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+function createGrid(gridId){
+
+const grid=document.getElementById(gridId);
+
+for(let i=0;i<=100;i++){
+
+const box=document.createElement("div");
+box.classList.add("box");
+box.textContent=i;
+
+box.addEventListener("click",()=>{
+
+set(ref(db,gridId+"/"+i),true);
+
+});
+
+onValue(ref(db,gridId+"/"+i),(snapshot)=>{
+
+if(snapshot.exists()){
+box.classList.add("clicked");
+}else{
+box.classList.remove("clicked");
+}
+
+});
+
+grid.appendChild(box);
+
+}
+
+}
+
+createGrid("grid-aron");
+createGrid("grid-milka");
+createGrid("grid-nico");
+
+</script>
   </body>
 </html> 
